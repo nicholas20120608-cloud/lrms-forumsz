@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Auth functions
 async function checkAuth() {
     try {
-        const response = await fetch('/api/me');
+        const response = await fetch('/api/me', {
+            credentials: 'include'
+        });
         if (response.ok) {
             const user = await response.json();
             currentUser = user;
@@ -45,7 +47,8 @@ async function handleLogin(e) {
         const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }),
+            credentials: 'include'
         });
         
         const data = await response.json();
@@ -73,7 +76,8 @@ async function handleRegister(e) {
         const response = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
+            body: JSON.stringify({ username, email, password }),
+            credentials: 'include'
         });
         
         const data = await response.json();
@@ -93,7 +97,10 @@ async function handleRegister(e) {
 
 async function logout() {
     try {
-        await fetch('/api/logout', { method: 'POST' });
+        await fetch('/api/logout', { 
+            method: 'POST',
+            credentials: 'include'
+        });
         currentUser = null;
         document.getElementById('authButtons').style.display = 'flex';
         document.getElementById('userInfo').style.display = 'none';
@@ -204,7 +211,8 @@ async function createThread() {
         const response = await fetch('/api/threads', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ categoryId: currentCategoryId, title })
+            body: JSON.stringify({ categoryId: currentCategoryId, title }),
+            credentials: 'include'
         });
         
         const data = await response.json();
@@ -278,7 +286,8 @@ async function handlePostSubmit(e) {
     try {
         const response = await fetch('/api/posts', {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: 'include'
         });
         
         const data = await response.json();
@@ -305,9 +314,13 @@ async function loadConversations() {
     if (!currentUser) return;
     
     try {
-        const response = await fetch('/api/messages');
+        const response = await fetch('/api/messages', {
+            credentials: 'include'
+        });
         const messages = await response.json();
-        const users = await fetch('/api/users').then(r => r.json());
+        const users = await fetch('/api/users', {
+            credentials: 'include'
+        }).then(r => r.json());
         
         // Group messages by conversation partner
         const conversations = new Map();
@@ -343,7 +356,9 @@ async function loadConversations() {
 async function loadConversation(userId, username) {
     currentConversationUserId = userId;
     try {
-        const response = await fetch(`/api/messages/conversation/${userId}`);
+        const response = await fetch(`/api/messages/conversation/${userId}`, {
+            credentials: 'include'
+        });
         const messages = await response.json();
         
         const container = document.getElementById('messagesContent');
@@ -393,7 +408,8 @@ async function sendMessage(e) {
     try {
         const response = await fetch('/api/messages', {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: 'include'
         });
         
         const data = await response.json();
@@ -411,7 +427,9 @@ async function sendMessage(e) {
 
 function showNewMessage() {
     // Show user selection for new message
-    fetch('/api/users')
+    fetch('/api/users', {
+        credentials: 'include'
+    })
         .then(r => r.json())
         .then(users => {
             const otherUsers = users.filter(u => u.id !== currentUser.userId);
@@ -428,7 +446,9 @@ function showNewMessage() {
 // Admin
 async function loadAdminUsers() {
     try {
-        const response = await fetch('/api/admin/users');
+        const response = await fetch('/api/admin/users', {
+            credentials: 'include'
+        });
         const users = await response.json();
         
         const container = document.getElementById('adminUsersList');
@@ -451,7 +471,8 @@ async function loadAdminUsers() {
 async function toggleAdmin(userId) {
     try {
         const response = await fetch(`/api/admin/users/${userId}/toggle-admin`, {
-            method: 'POST'
+            method: 'POST',
+            credentials: 'include'
         });
         
         if (response.ok) {
